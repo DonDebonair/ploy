@@ -11,9 +11,10 @@ type Deployments struct {
 	Deployments []map[string]any `yaml:"deployments"`
 }
 
-func LoadDeploymentsFromFile(path string) ([]engine.Deployment, error) {
+func LoadDeploymentsFromFile(cliArgs []string) ([]engine.Deployment, error) {
+	deploymentsConfigPath := cliArgs[0]
 	deploymentsConfig := &Deployments{}
-	bytes, err := ioutil.ReadFile(path)
+	bytes, err := ioutil.ReadFile(deploymentsConfigPath)
 	if err != nil {
 		return nil, err
 	}
