@@ -32,7 +32,7 @@ func doDeployment(deploymentConfig engine.Deployment) error {
 	}
 	if version != deploymentConfig.Version() {
 		p("version '%s' does not match expected version '%s'. Deploying new version...", version, deploymentConfig.Version())
-		err = deploymentEngine.Deploy(deploymentConfig)
+		err = deploymentEngine.Deploy(deploymentConfig, p)
 		if err != nil {
 			return err
 		} else {

@@ -33,7 +33,12 @@ deployments:
     version-environment-key: VERSION # optional, updates the given environment variable with the version when deploying 
   - id: my-container # in case of ECS, this is the service name
     type: ecs
+    cluster: my-cluster
     version: v666
+    version-environment-key: VERSION # optional, updates the given environment variable in the container with the version when deploying
+    wait-for-service-stability: true # optional, defaults to false
+    wait-for-minutes: 5 # optional, how long to wait for service stability, defaults to 30
+    force-new-deployment: true # optional, defaults to false
 ```
 
 Typically, you'll have one configuration file for each environment (e.g. dev, prod, staging).
@@ -56,7 +61,6 @@ Fork the repo, make your changes, and submit a pull request.
 ## TODO
 
 - Update CLI help texts (currently, the Cobra defaults are used)
-- Implement support for deploying ECS services (currently verification of ECS services works)
 - Better error handling
 - Add support for deploying new ECS task definitions for one-off tasks that are not part of a 
   service
