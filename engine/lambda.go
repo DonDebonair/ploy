@@ -38,7 +38,7 @@ func (engine *LambdaDeploymentEngine) ResolveConfigStruct() Deployment {
 	return &LambdaDeployment{}
 }
 
-func (engine *LambdaDeploymentEngine) Deploy(config Deployment) error {
+func (engine *LambdaDeploymentEngine) Deploy(config Deployment, _ func(string, ...any)) error {
 	lambdaConfig := config.(*LambdaDeployment)
 	// TODO: we get the image of the deployed Lambda, but Deploy() is always called after CheckVersion() in deployments.doDeployment(). So this is a bit of a waste...
 	functionInfo, err := engine.LambdaClient.GetFunction(

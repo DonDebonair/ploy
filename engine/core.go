@@ -21,7 +21,7 @@ type BaseDeploymentConfig struct {
 type DeploymentEngine interface {
 	Type() string
 	ResolveConfigStruct() Deployment
-	Deploy(deploymentConfig Deployment) error
+	Deploy(deploymentConfig Deployment, printer func(string, ...any)) error
 	CheckVersion(deploymentConfig Deployment) (string, error)
 }
 
