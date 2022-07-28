@@ -20,7 +20,7 @@ go install github.com/DandyDev/ploy
 
 ## Usage
 
-First, you have to create one or more Ploy configuration files. A Ploy configuration file 
+First, you have to create one or more Ploy configuration files. A Ploy configuration file
 contains a list of services and their desired versions. It's written in YAML.
 
 Example:
@@ -43,7 +43,7 @@ deployments:
 
 Typically, you'll have one configuration file for each environment (e.g. dev, prod, staging).
 
-After defining the configuration files, you can use the `ploy` command to verify or deploy the 
+After defining the configuration files, you can use the `ploy` command to verify or deploy the
 services.
 
 ```bash
@@ -51,8 +51,17 @@ ploy verify development.yml
 ploy deploy development.yml
 ```
 
-Ploy will only deploy new versions of services if the desired version is different from the 
+Ploy will only deploy new versions of services if the desired version is different from the
 currently deployed version.
+
+## Engines
+
+There are currently to supported deployment engines:
+
+- [AWS Lambda](https://aws.amazon.com/lambda/) (type: `lambda) - with the code packaged as a Docker 
+  image. Version is the image tag.
+- [AWS ECS](https://aws.amazon.com/ecs/) (type: `ecs) - with the code packaged as a Docker image. 
+  Version is the image tag.
 
 ## Contributing
 
@@ -62,12 +71,14 @@ Fork the repo, make your changes, and submit a pull request.
 
 - Update CLI help texts (currently, the Cobra defaults are used)
 - Better error handling
-- Add support for deploying new ECS task definitions for one-off tasks that are not part of a 
+- Add support for deploying new ECS task definitions for one-off tasks that are not part of a
   service
-- Add support for other deployment engines. See `github.com/DandyDev/ploy/engine` for examples of 
+- Add support for other deployment engines. See `github.com/DandyDev/ploy/engine` for examples of
   how engines are implemented
-- Create command that serves a simple dashboard the visualizes the services that are deployed 
+- Create command that serves a simple dashboard the visualizes the services that are deployed
   and their versions. Should do periodic checks in the background to verify versions
+- Do automatic releases through go-releaser and Github Actions
+- Create a Homebrew tap + formula for Ploy
 
 ## Authors
 
