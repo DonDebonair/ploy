@@ -77,7 +77,7 @@ Fork the repo, make your changes, and submit a pull request.
   how engines are implemented
 - Create command that serves a simple dashboard the visualizes the services that are deployed
   and their versions. Should do periodic checks in the background to verify versions
-- Do automatic releases through go-releaser and Github Actions
+- ~~Do automatic releases through go-releaser and Github Actions~~
 - Create a Homebrew tap + formula for Ploy
 
 ## Authors
