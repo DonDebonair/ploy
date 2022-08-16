@@ -7,7 +7,7 @@ import (
 
 func CreateDeploymentPrinter(deploymentId string) func(string, ...any) {
 	return func(fmtString string, a ...any) {
-		fmtString = deploymentId + ": " + fmtString
+		fmtString = "[" + deploymentId + "]" + ": " + fmtString
 		if !strings.HasSuffix(fmtString, "\n") {
 			fmtString = fmtString + "\n"
 		}
