@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
@@ -44,10 +45,10 @@ func ListEngines() []string {
 	return keys
 }
 
-func GetEngine(id string) DeploymentEngine {
+func GetEngine(id string) (DeploymentEngine, error) {
 	engine, ok := engineRegistry[id]
 	if !ok {
-		panic("Unknown deployment engine " + id)
+		return nil, fmt.Errorf("unknown deployment engine %s", id)
 	}
-	return engine
+	return engine, nil
 }

@@ -2,6 +2,7 @@ package deployments
 
 import (
 	"github.com/DandyDev/ploy/engine"
+	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/cobra"
 	"sync"
 )
@@ -9,22 +10,32 @@ import (
 func Deploy(_ *cobra.Command, args []string) {
 	deployments, err := LoadDeploymentsFromFile(args)
 	cobra.CheckErr(err)
+
+	errorChan := make(chan error, len(deployments))
 	var wg sync.WaitGroup
 	for _, deployment := range deployments {
 		wg.Add(1)
 		deployment := deployment
 		go func() {
 			defer wg.Done()
-			err := doDeployment(deployment)
-			cobra.CheckErr(err)
+			errorChan <- doDeployment(deployment)
 		}()
 	}
 	wg.Wait()
+	close(errorChan)
+	var result *multierror.Error
+	for err := range errorChan {
+		result = multierror.Append(result, err)
+	}
+	cobra.CheckErr(result.ErrorOrNil())
 }
 
 func doDeployment(deploymentConfig engine.Deployment) error {
 	p := CreateDeploymentPrinter(deploymentConfig.Id())
-	deploymentEngine := engine.GetEngine(deploymentConfig.Type())
+	deploymentEngine, err := engine.GetEngine(deploymentConfig.Type())
+	if err != nil {
+		return err
+	}
 	p("checking deployed version...")
 	version, err := deploymentEngine.CheckVersion(deploymentConfig)
 	if err != nil {

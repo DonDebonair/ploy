@@ -4,7 +4,7 @@ import (
 	"github.com/DandyDev/ploy/engine"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
+	"os"
 )
 
 type Deployments struct {
@@ -14,7 +14,7 @@ type Deployments struct {
 func LoadDeploymentsFromFile(cliArgs []string) ([]engine.Deployment, error) {
 	deploymentsConfigPath := cliArgs[0]
 	deploymentsConfig := &Deployments{}
-	bytes, err := ioutil.ReadFile(deploymentsConfigPath)
+	bytes, err := os.ReadFile(deploymentsConfigPath)
 	if err != nil {
 		return nil, err
 	}
@@ -23,10 +23,13 @@ func LoadDeploymentsFromFile(cliArgs []string) ([]engine.Deployment, error) {
 		return nil, err
 	}
 	deployments := make([]engine.Deployment, 0, len(deploymentsConfig.Deployments))
-	for _, d := range deploymentsConfig.Deployments {
-		deploymentEngine := engine.GetEngine(d["type"].(string))
+	for _, deployment := range deploymentsConfig.Deployments {
+		deploymentEngine, err := engine.GetEngine(deployment["type"].(string))
+		if err != nil {
+			return nil, err
+		}
 		deploymentConfig := deploymentEngine.ResolveConfigStruct()
-		err = mapstructure.Decode(d, deploymentConfig)
+		err = mapstructure.Decode(deployment, deploymentConfig)
 		if err != nil {
 			return nil, err
 		}
