@@ -10,7 +10,6 @@ import (
 
 var FailOnVersionMismatch bool
 
-// TODO: should this command return a non-zero exit code when the versions of one or more deployments don't match?
 func Verify(_ *cobra.Command, args []string) {
 	deployments, err := LoadDeploymentsFromFile(args)
 	cobra.CheckErr(err)
