@@ -14,33 +14,32 @@ var FailOnVersionMismatch bool
 func Verify(_ *cobra.Command, args []string) {
 	deployments, err := LoadDeploymentsFromFile(args)
 	cobra.CheckErr(err)
-	var wg sync.WaitGroup
+
 	errorChan := make(chan error, len(deployments))
+	var wg sync.WaitGroup
 	for _, deployment := range deployments {
 		wg.Add(1)
 		deployment := deployment
 		go func() {
 			defer wg.Done()
 			errorChan <- verifyDeployment(deployment, FailOnVersionMismatch)
-			cobra.CheckErr(err)
 		}()
 	}
-	go func() {
-		wg.Wait()
-		close(errorChan)
-	}()
-	var result error
+	wg.Wait()
+	close(errorChan)
+	var result *multierror.Error
 	for err := range errorChan {
-		if err != nil {
-			result = multierror.Append(result, err)
-		}
+		result = multierror.Append(result, err)
 	}
-	cobra.CheckErr(result)
+	cobra.CheckErr(result.ErrorOrNil())
 }
 
 func verifyDeployment(deploymentConfig engine.Deployment, failOnVersionMismatch bool) error {
 	p := CreateDeploymentPrinter(deploymentConfig.Id())
-	deploymentEngine := engine.GetEngine(deploymentConfig.Type())
+	deploymentEngine, err := engine.GetEngine(deploymentConfig.Type())
+	if err != nil {
+		return err
+	}
 	version, err := deploymentEngine.CheckVersion(deploymentConfig)
 	if err != nil {
 		return err
@@ -48,7 +47,7 @@ func verifyDeployment(deploymentConfig engine.Deployment, failOnVersionMismatch 
 	if version != deploymentConfig.Version() {
 		p("❌ version '%s' does not match expected version '%s'", version, deploymentConfig.Version())
 		if failOnVersionMismatch {
-			return fmt.Errorf("version '%s' does not match expected version '%s'", version, deploymentConfig.Version())
+			return fmt.Errorf("%s: version '%s' does not match expected version '%s'", deploymentConfig.Id(), version, deploymentConfig.Version())
 		}
 	} else {
 		p("✅ version '%s' matches expected version '%s'", version, deploymentConfig.Version())

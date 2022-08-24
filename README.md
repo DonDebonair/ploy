@@ -56,11 +56,11 @@ currently deployed version.
 
 ## Engines
 
-There are currently to supported deployment engines:
+There are currently two supported deployment engines:
 
-- [AWS Lambda](https://aws.amazon.com/lambda/) (type: `lambda) - with the code packaged as a Docker 
+- [AWS Lambda](https://aws.amazon.com/lambda/) (type: `lambda`) - with the code packaged as a Docker 
   image. Version is the image tag.
-- [AWS ECS](https://aws.amazon.com/ecs/) (type: `ecs) - with the code packaged as a Docker image. 
+- [AWS ECS](https://aws.amazon.com/ecs/) (type: `ecs`) - with the code packaged as a Docker image. 
   Version is the image tag.
 
 ## Contributing
