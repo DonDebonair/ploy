@@ -10,13 +10,8 @@ import (
 // enginesCmd represents the engines command
 var enginesCmd = &cobra.Command{
 	Use:   "engines",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "List supported deployment engines",
+	Long:  `List the deployment engines that ploy supports`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Deployment engines:")
 		for _, e := range engine.ListEngines() {
