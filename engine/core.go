@@ -11,12 +11,30 @@ type Deployment interface {
 	Id() string
 	Type() string
 	Version() string
+	PostDeployScript() string
 }
 
 type BaseDeploymentConfig struct {
-	Id_      string `mapstructure:"id"`
-	Type_    string `mapstructure:"type"`
-	Version_ string `mapstructure:"version"`
+	Id_               string `mapstructure:"id"`
+	Type_             string `mapstructure:"type"`
+	Version_          string `mapstructure:"version"`
+	PostDeployScript_ string `mapstructure:"post-deploy-script"`
+}
+
+func (d BaseDeploymentConfig) Id() string {
+	return d.Id_
+}
+
+func (d BaseDeploymentConfig) Type() string {
+	return d.Type_
+}
+
+func (d BaseDeploymentConfig) Version() string {
+	return d.Version_
+}
+
+func (d BaseDeploymentConfig) PostDeployScript() string {
+	return d.PostDeployScript_
 }
 
 type DeploymentEngine interface {

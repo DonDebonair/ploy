@@ -1,9 +1,12 @@
 package deployments
 
 import (
+	"fmt"
 	"github.com/DandyDev/ploy/engine"
 	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/cobra"
+	"os"
+	"os/exec"
 	"sync"
 )
 
@@ -46,10 +49,24 @@ func doDeployment(deploymentConfig engine.Deployment) error {
 		err = deploymentEngine.Deploy(deploymentConfig, p)
 		if err != nil {
 			return err
-		} else {
-			p("version %s deployed successfully!", deploymentConfig.Version())
-			return nil
 		}
+		if deploymentConfig.PostDeployScript() != "" {
+			p("running post-deployment script %s...", deploymentConfig.PostDeployScript())
+			bashPath, err := exec.LookPath("bash")
+			if err != nil {
+				return err
+			}
+			cmd := exec.Command(bashPath, deploymentConfig.PostDeployScript())
+			cmd.Env = os.Environ()
+			cmd.Env = append(cmd.Env, "VERSION="+deploymentConfig.Version())
+			output, err := cmd.Output()
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(output))
+		}
+		p("version %s deployed successfully!", deploymentConfig.Version())
+		return nil
 	} else {
 		p("version '%s' matches expected version '%s'. Skipping...", version, deploymentConfig.Version())
 		return nil

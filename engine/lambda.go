@@ -14,18 +14,6 @@ type LambdaDeployment struct {
 	VersionEnvironmentKey string `mapstructure:"version-environment-key"`
 }
 
-func (d LambdaDeployment) Id() string {
-	return d.Id_
-}
-
-func (d LambdaDeployment) Type() string {
-	return d.Type_
-}
-
-func (d LambdaDeployment) Version() string {
-	return d.Version_
-}
-
 type LambdaDeploymentEngine struct {
 	LambdaClient *lambda.Client
 }

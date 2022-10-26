@@ -18,18 +18,6 @@ type EcsDeployment struct {
 	ForceNewDeployment      bool   `mapstructure:"force-new-deployment"`
 }
 
-func (d EcsDeployment) Id() string {
-	return d.Id_
-}
-
-func (d EcsDeployment) Type() string {
-	return d.Type_
-}
-
-func (d EcsDeployment) Version() string {
-	return d.Version_
-}
-
 type ECSDeploymentEngine struct {
 	ECSClient *ecs.Client
 }

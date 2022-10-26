@@ -30,7 +30,8 @@ deployments:
   - id: my-lambda # in case of Lambda, this is the function name
     type: lambda
     version: v2
-    version-environment-key: VERSION # optional, updates the given environment variable with the version when deploying 
+    version-environment-key: VERSION # optional, updates the given environment variable with the version when deploying
+    post-deploy-script: my-script.sh # optional, runs the specified script after succesful deployment, using `bash`. The deploy version is availabe as the VERSION variable inside the script
   - id: my-container # in case of ECS, this is the service name
     type: ecs
     cluster: my-cluster
@@ -69,7 +70,6 @@ Fork the repo, make your changes, and submit a pull request.
 
 ## TODO
 
-- Update CLI help texts (currently, the Cobra defaults are used)
 - Better error handling
 - Add support for deploying new ECS task definitions for one-off tasks that are not part of a
   service
@@ -77,7 +77,6 @@ Fork the repo, make your changes, and submit a pull request.
   how engines are implemented
 - Create command that serves a simple dashboard the visualizes the services that are deployed
   and their versions. Should do periodic checks in the background to verify versions
-- ~~Do automatic releases through go-releaser and Github Actions~~
 - Create a Homebrew tap + formula for Ploy
 
 ## Authors
