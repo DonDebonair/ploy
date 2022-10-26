@@ -7,16 +7,17 @@ import (
 
 // deployCmd represents the deploy command
 var deployCmd = &cobra.Command{
-	Use:   "deploy",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "deploy [config-file]",
+	Short: "Deploy services/applications in the specified deployment config",
+	Long: `Deploy services/applications in the specified deployment config
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run:  deployments.Deploy,
-	Args: cobra.ExactArgs(1),
+Given the specified deployment configuration file in yaml format, 
+check which versions of the services/applications in the config file are 
+currently deployed and if these differ from the versions specified in the 
+configuration file, deploy the specified versions.`,
+	Run:     deployments.Deploy,
+	Args:    cobra.ExactArgs(1),
+	Example: "ploy deploy production.yml",
 }
 
 func init() {

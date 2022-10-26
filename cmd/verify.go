@@ -8,14 +8,14 @@ import (
 
 // verifyCmd represents the verify command
 var verifyCmd = &cobra.Command{
-	Use:   "verify",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "verify [config-file]",
+	Short: "Verify deployed versions of services/applications in the specified deployment config",
+	Long: `Verify deployed versions of services/applications in the specified deployment config
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Given the specified deployment configuration file in yaml format, 
+check which versions of the services/applications in the config file are 
+currently deployed and verify if these versions match the versions 
+specified in the config file.`,
 	Run:  deployments.Verify,
 	Args: cobra.ExactArgs(1),
 }
