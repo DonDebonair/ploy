@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 )
 
@@ -50,13 +51,13 @@ func doDeployment(deploymentConfig engine.Deployment) error {
 		if err != nil {
 			return err
 		}
-		if deploymentConfig.PostDeployScript() != "" {
-			p("running post-deployment script %s...", deploymentConfig.PostDeployScript())
-			bashPath, err := exec.LookPath("bash")
+		if len(deploymentConfig.PostDeployCommand()) > 0 {
+			commandString := strings.Join(deploymentConfig.PostDeployCommand(), " ")
+			p("running post-deployment command %s...", commandString)
 			if err != nil {
 				return err
 			}
-			cmd := exec.Command(bashPath, deploymentConfig.PostDeployScript())
+			cmd := exec.Command(deploymentConfig.PostDeployCommand()[0], deploymentConfig.PostDeployCommand()[1:]...)
 			cmd.Env = os.Environ()
 			cmd.Env = append(cmd.Env, "VERSION="+deploymentConfig.Version())
 			output, err := cmd.Output()
