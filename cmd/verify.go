@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/DandyDev/ploy/deployments"
+	"github.com/DonDebonair/ploy/deployments"
 
 	"github.com/spf13/cobra"
 )

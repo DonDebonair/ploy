@@ -1,4 +1,4 @@
-module github.com/DandyDev/ploy
+module github.com/DonDebonair/ploy
 
 go 1.18
 
