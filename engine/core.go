@@ -12,13 +12,14 @@ type Deployment interface {
 	Type() string
 	Version() string
 	PostDeployCommand() []string
+	SetVersion(version string)
 }
 
 type BaseDeploymentConfig struct {
 	Id_                string   `mapstructure:"id"`
 	Type_              string   `mapstructure:"type"`
 	Version_           string   `mapstructure:"version"`
-	PostDeployCommand_ []string `mapstructure:"post-deploy-command"`
+	PostDeployCommand_ []string `mapstructure:"post-deploy-command,omitempty"`
 }
 
 func (d BaseDeploymentConfig) Id() string {
@@ -35,6 +36,10 @@ func (d BaseDeploymentConfig) Version() string {
 
 func (d BaseDeploymentConfig) PostDeployCommand() []string {
 	return d.PostDeployCommand_
+}
+
+func (d *BaseDeploymentConfig) SetVersion(version string) {
+	d.Version_ = version
 }
 
 type DeploymentEngine interface {

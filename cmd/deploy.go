@@ -7,7 +7,7 @@ import (
 
 // deployCmd represents the deploy command
 var deployCmd = &cobra.Command{
-	Use:   "deploy [config-file]",
+	Use:   "deploy <config-file>",
 	Short: "Deploy services/applications in the specified deployment config",
 	Long: `Deploy services/applications in the specified deployment config
 
