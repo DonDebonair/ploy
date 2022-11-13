@@ -8,7 +8,7 @@ import (
 
 // verifyCmd represents the verify command
 var verifyCmd = &cobra.Command{
-	Use:   "verify [config-file]",
+	Use:   "verify <config-file>",
 	Short: "Verify deployed versions of services/applications in the specified deployment config",
 	Long: `Verify deployed versions of services/applications in the specified deployment config
 

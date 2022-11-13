@@ -11,7 +11,7 @@ import (
 var FailOnVersionMismatch bool
 
 func Verify(_ *cobra.Command, args []string) {
-	deployments, err := LoadDeploymentsFromFile(args)
+	deployments, err := LoadDeploymentsFromFile(args[0])
 	cobra.CheckErr(err)
 
 	errorChan := make(chan error, len(deployments))

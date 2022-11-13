@@ -47,13 +47,35 @@ Typically, you'll have one configuration file for each environment (e.g. dev, pr
 After defining the configuration files, you can use the `ploy` command to verify or deploy the
 services.
 
+### Verify
+
 ```bash
 ploy verify development.yml
+```
+
+This will verify if all the services specified in the deployment file are running at the versions 
+specified in the deployment file
+
+### Deploy
+
+```bash
 ploy deploy development.yml
 ```
 
-Ploy will only deploy new versions of services if the desired version is different from the
-currently deployed version.
+This will check for each service in the deployment file which version is currently deployed. If 
+the deployed version differs from the version specified in the deployment file, it will deploy 
+the desired version of that service. If the desired version is already running, it will do nothing.
+
+### Update version
+
+```bash
+ploy update development.yml my-service v123
+```
+
+This will update the deployment file so that the specified version is set at the specified 
+version. **This will not do an actual deployment**. You can run `ploy deploy` afterwards. 
+
+This command was created to make it easy to update deployment files through CI/CD.
 
 ## Engines
 

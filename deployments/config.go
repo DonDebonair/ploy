@@ -11,8 +11,7 @@ type Deployments struct {
 	Deployments []map[string]any `yaml:"deployments"`
 }
 
-func LoadDeploymentsFromFile(cliArgs []string) ([]engine.Deployment, error) {
-	deploymentsConfigPath := cliArgs[0]
+func LoadDeploymentsFromFile(deploymentsConfigPath string) ([]engine.Deployment, error) {
 	deploymentsConfig := &Deployments{}
 	bytes, err := os.ReadFile(deploymentsConfigPath)
 	if err != nil {
@@ -36,4 +35,26 @@ func LoadDeploymentsFromFile(cliArgs []string) ([]engine.Deployment, error) {
 		deployments = append(deployments, deploymentConfig)
 	}
 	return deployments, nil
+}
+
+func WriteDeploymentsToFile(deploymentsConfigPath string, deployments []engine.Deployment) error {
+	deploymentMaps := make([]map[string]any, 0)
+	for _, deployment := range deployments {
+		var deploymentMap map[string]any
+		err := mapstructure.Decode(deployment, &deploymentMap)
+		if err != nil {
+			return err
+		}
+		deploymentMaps = append(deploymentMaps, deploymentMap)
+	}
+	serializableDeployments := Deployments{Deployments: deploymentMaps}
+	result, err := yaml.Marshal(serializableDeployments)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(deploymentsConfigPath, result, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }
