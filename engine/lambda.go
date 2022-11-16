@@ -11,7 +11,7 @@ import (
 
 type LambdaDeployment struct {
 	BaseDeploymentConfig  `mapstructure:",squash"`
-	VersionEnvironmentKey string `mapstructure:"version-environment-key"`
+	VersionEnvironmentKey string `mapstructure:"version-environment-key,omitempty"`
 }
 
 type LambdaDeploymentEngine struct {
