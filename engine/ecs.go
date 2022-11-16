@@ -12,10 +12,10 @@ import (
 type EcsDeployment struct {
 	BaseDeploymentConfig    `mapstructure:",squash"`
 	Cluster                 string `mapstructure:"cluster"`
-	VersionEnvironmentKey   string `mapstructure:"version-environment-key"`
-	WaitForServiceStability bool   `mapstructure:"wait-for-service-stability"`
-	WaitForMinutes          int    `mapstructure:"wait-for-minutes"`
-	ForceNewDeployment      bool   `mapstructure:"force-new-deployment"`
+	VersionEnvironmentKey   string `mapstructure:"version-environment-key,omitempty"`
+	WaitForServiceStability bool   `mapstructure:"wait-for-service-stability,omitempty"`
+	WaitForMinutes          int    `mapstructure:"wait-for-minutes,omitempty"`
+	ForceNewDeployment      bool   `mapstructure:"force-new-deployment,omitempty"`
 }
 
 type ECSDeploymentEngine struct {
