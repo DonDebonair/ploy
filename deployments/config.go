@@ -1,6 +1,7 @@
 package deployments
 
 import (
+	"bytes"
 	"github.com/DonDebonair/ploy/engine"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
@@ -13,11 +14,11 @@ type Deployments struct {
 
 func LoadDeploymentsFromFile(deploymentsConfigPath string) ([]engine.Deployment, error) {
 	deploymentsConfig := &Deployments{}
-	bytes, err := os.ReadFile(deploymentsConfigPath)
+	b, err := os.ReadFile(deploymentsConfigPath)
 	if err != nil {
 		return nil, err
 	}
-	err = yaml.Unmarshal(bytes, deploymentsConfig)
+	err = yaml.Unmarshal(b, deploymentsConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -48,13 +49,24 @@ func WriteDeploymentsToFile(deploymentsConfigPath string, deployments []engine.D
 		deploymentMaps = append(deploymentMaps, deploymentMap)
 	}
 	serializableDeployments := Deployments{Deployments: deploymentMaps}
-	result, err := yaml.Marshal(serializableDeployments)
-	if err != nil {
-		return err
-	}
-	err = os.WriteFile(deploymentsConfigPath, result, 0644)
+	err := marshalYamlToFile(serializableDeployments, deploymentsConfigPath)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func marshalYamlToFile(in interface{}, path string) (err error) {
+	var buffer bytes.Buffer
+	encoder := yaml.NewEncoder(&buffer)
+	defer func() {
+		err = encoder.Close()
+	}()
+	encoder.SetIndent(2)
+	err = encoder.Encode(in)
+	if err != nil {
+		return
+	}
+	err = os.WriteFile(path, buffer.Bytes(), 0644)
+	return
 }
