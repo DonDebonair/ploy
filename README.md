@@ -31,7 +31,8 @@ deployments:
     type: lambda
     version: v2
     version-environment-key: VERSION # optional, updates the given environment variable with the version when deploying
-    post-deploy-command: ["./my-script.sh", "arg1", "arg2"] # optional, runs the specified command after succesful deployment. The deployed version is availabe as the $VERSION environment variable 
+    pre-deploy-command: ["./my-script.sh", "arg1", "arg2"] # optional, runs the specified command before deployment. The to be deployed version is available as the $VERSION environment variable 
+    post-deploy-command: ["./my-script.sh", "arg1", "arg2"] # optional, runs the specified command after successful deployment. The deployed version is available as the $VERSION environment variable 
   - id: my-container # in case of ECS, this is the service name
     type: ecs
     cluster: my-cluster
