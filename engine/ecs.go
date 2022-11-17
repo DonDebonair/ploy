@@ -51,7 +51,7 @@ func (engine *ECSDeploymentEngine) Deploy(config Deployment, p func(string, ...a
 	taskDefinitionOutput, err := engine.ECSClient.DescribeTaskDefinition(context.Background(), &ecs.DescribeTaskDefinitionInput{
 		TaskDefinition: taskDefinitionArn,
 	})
-	p("Registring new task definition for '%s' with version '%s'...", *taskDefinitionOutput.TaskDefinition.Family, ecsConfig.Version())
+	p("Registering new task definition for '%s' with version '%s'...", *taskDefinitionOutput.TaskDefinition.Family, ecsConfig.Version())
 	registerTaskDefinitionOutput, err := engine.ECSClient.RegisterTaskDefinition(context.Background(), generateRegisterTaskDefinitionInput(taskDefinitionOutput.TaskDefinition, ecsConfig.Version(), ecsConfig.VersionEnvironmentKey))
 	if err != nil {
 		return err
@@ -112,6 +112,7 @@ func generateRegisterTaskDefinitionInput(taskDefinition *types.TaskDefinition, v
 
 // TODO: error handling if service can't be found or multiple services found (shouldn't be possible with list of one?).
 // TODO: deal with task definitions without a service (i.e. one-off tasks). Maybe separate out into a separate engine?
+
 func (engine *ECSDeploymentEngine) CheckVersion(config Deployment) (string, error) {
 	ecsConfig := config.(*EcsDeployment)
 	services, err := engine.ECSClient.DescribeServices(

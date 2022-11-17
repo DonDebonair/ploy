@@ -1,6 +1,7 @@
 package deployments
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/DonDebonair/ploy/engine"
 	"github.com/hashicorp/go-multierror"
@@ -47,24 +48,18 @@ func doDeployment(deploymentConfig engine.Deployment) error {
 	}
 	if version != deploymentConfig.Version() {
 		p("version '%s' does not match expected version '%s'. Deploying new version...", version, deploymentConfig.Version())
-		err = deploymentEngine.Deploy(deploymentConfig, p)
-		if err != nil {
+		if len(deploymentConfig.PreDeployCommand()) > 0 {
+			if err = runDeploymentScript("pre", deploymentConfig.PreDeployCommand(), deploymentConfig.Version(), p); err != nil {
+				return err
+			}
+		}
+		if err = deploymentEngine.Deploy(deploymentConfig, p); err != nil {
 			return err
 		}
 		if len(deploymentConfig.PostDeployCommand()) > 0 {
-			commandString := strings.Join(deploymentConfig.PostDeployCommand(), " ")
-			p("running post-deployment command %s...", commandString)
-			if err != nil {
+			if err = runDeploymentScript("post", deploymentConfig.PostDeployCommand(), deploymentConfig.Version(), p); err != nil {
 				return err
 			}
-			cmd := exec.Command(deploymentConfig.PostDeployCommand()[0], deploymentConfig.PostDeployCommand()[1:]...)
-			cmd.Env = os.Environ()
-			cmd.Env = append(cmd.Env, "VERSION="+deploymentConfig.Version())
-			output, err := cmd.Output()
-			if err != nil {
-				return err
-			}
-			fmt.Println(string(output))
 		}
 		p("version %s deployed successfully!", deploymentConfig.Version())
 		return nil
@@ -72,4 +67,29 @@ func doDeployment(deploymentConfig engine.Deployment) error {
 		p("version '%s' matches expected version '%s'. Skipping...", version, deploymentConfig.Version())
 		return nil
 	}
+}
+
+func runDeploymentScript(context string, deploymentCommand []string, version string, p func(string, ...any)) error {
+	p("running %s-deployment command %s...", context, strings.Join(deploymentCommand, " "))
+	cmd := exec.Command(deploymentCommand[0], deploymentCommand[1:]...)
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, fmt.Sprintf("VERSION=%s", version))
+	output, err := cmd.StdoutPipe()
+	if err != nil {
+		return err
+	}
+
+	if err = cmd.Start(); err != nil {
+		return err
+	}
+
+	scanner := bufio.NewScanner(output)
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+	}
+	if err = cmd.Wait(); err != nil {
+		return err
+	}
+
+	return nil
 }
