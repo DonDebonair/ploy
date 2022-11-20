@@ -18,11 +18,10 @@ func Verify(_ *cobra.Command, args []string) {
 	var wg sync.WaitGroup
 	for _, deployment := range deployments {
 		wg.Add(1)
-		deployment := deployment
-		go func() {
+		go func(deployment engine.Deployment) {
 			defer wg.Done()
 			errorChan <- verifyDeployment(deployment, FailOnVersionMismatch)
-		}()
+		}(deployment)
 	}
 	wg.Wait()
 	close(errorChan)
