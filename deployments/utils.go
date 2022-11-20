@@ -15,13 +15,4 @@ func CreateDeploymentPrinter(deploymentId string) func(string, ...any) {
 	}
 }
 
-func Find[E any](s []E, f func(E) bool) *E {
-	for _, v := range s {
-		if f(v) {
-			return &v
-		}
-	}
-	return nil
-}
-
 //func Update[E any](s []E, predicate func(E) bool, updateFunc func(E) E)

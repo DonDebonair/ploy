@@ -2,6 +2,8 @@ package engine
 
 import (
 	"context"
+	"fmt"
+	"github.com/DonDebonair/ploy/utils"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -47,7 +49,11 @@ func (engine *ECSDeploymentEngine) Deploy(config Deployment, p func(string, ...a
 	if err != nil {
 		return err
 	}
-	taskDefinitionArn := services.Services[0].Deployments[0].TaskDefinition
+	runningDeployment, err := findRunningDeployment(services, ecsConfig)
+	if err != nil {
+		return err
+	}
+	taskDefinitionArn := runningDeployment.TaskDefinition
 	taskDefinitionOutput, err := engine.ECSClient.DescribeTaskDefinition(context.Background(), &ecs.DescribeTaskDefinitionInput{
 		TaskDefinition: taskDefinitionArn,
 	})
@@ -110,7 +116,6 @@ func generateRegisterTaskDefinitionInput(taskDefinition *types.TaskDefinition, v
 	return registerTaskDefinitionInput
 }
 
-// TODO: error handling if service can't be found or multiple services found (shouldn't be possible with list of one?).
 // TODO: deal with task definitions without a service (i.e. one-off tasks). Maybe separate out into a separate engine?
 
 func (engine *ECSDeploymentEngine) CheckVersion(config Deployment) (string, error) {
@@ -125,7 +130,11 @@ func (engine *ECSDeploymentEngine) CheckVersion(config Deployment) (string, erro
 	if err != nil {
 		return "", err
 	}
-	taskDefinitionArn := services.Services[0].Deployments[0].TaskDefinition
+	runningDeployment, err := findRunningDeployment(services, ecsConfig)
+	if err != nil {
+		return "", err
+	}
+	taskDefinitionArn := runningDeployment.TaskDefinition
 	taskDefinitionOutput, err := engine.ECSClient.DescribeTaskDefinition(context.Background(), &ecs.DescribeTaskDefinitionInput{
 		TaskDefinition: taskDefinitionArn,
 	})
@@ -133,6 +142,25 @@ func (engine *ECSDeploymentEngine) CheckVersion(config Deployment) (string, erro
 		return "", err
 	}
 	return strings.Split(*taskDefinitionOutput.TaskDefinition.ContainerDefinitions[0].Image, ":")[1], nil
+}
+
+func findRunningDeployment(services *ecs.DescribeServicesOutput, deploymentConfig *EcsDeployment) (*types.Deployment, error) {
+	if len(services.Services) < 1 {
+		return nil, fmt.Errorf("service %s does not exist", deploymentConfig.Id())
+	}
+	deployments := services.Services[0].Deployments
+	runningDeployment := utils.Find(deployments, func(d types.Deployment) bool {
+		return *d.Status == "PRIMARY" && d.DesiredCount == d.RunningCount
+	})
+	if runningDeployment == nil {
+		runningDeployment = utils.Find(deployments, func(d types.Deployment) bool {
+			return *d.Status == "ACTIVE" && d.DesiredCount == d.RunningCount
+		})
+	}
+	if runningDeployment == nil {
+		return nil, fmt.Errorf("no running deployment found for %s", deploymentConfig.Id())
+	}
+	return runningDeployment, nil
 }
 
 func init() {
