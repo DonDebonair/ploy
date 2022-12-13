@@ -6,8 +6,8 @@ are deployed and, if not, it can deploy the right versions.
 
 It can currently verify and deploy services of the following types:
 
-- [AWS Lambda](https://aws.amazon.com/lambda/) - with the code packaged as a Docker image and
-  published to ECR
+- [AWS Lambda](https://aws.amazon.com/lambda/) - with the code packaged either as a Docker image and published to 
+  ECR or as a zip file on S3
 - [AWS ECS](https://aws.amazon.com/ecs/)
 
 ## Installation
@@ -33,6 +33,12 @@ deployments:
     version-environment-key: VERSION # optional, updates the given environment variable with the version when deploying
     pre-deploy-command: ["./my-script.sh", "arg1", "arg2"] # optional, runs the specified command before deployment. The to be deployed version is available as the $VERSION environment variable 
     post-deploy-command: ["./my-script.sh", "arg1", "arg2"] # optional, runs the specified command after successful deployment. The deployed version is available as the $VERSION environment variable 
+  - id: my-zipped-lambda # in case of Lambda, this is the function name
+    type: lambda
+    version: v3
+    version-environment-key: VERSION # optional, updates the given environment variable with the version when deploying
+    bucket: my-bucket # S3 bucket that contains the zipped deployable
+    key: "{{.Id}}/{{.Version}}.zip" # S3 key of zipped deployable. This is a template that is resolved at deployment time. Supported variables are the Id of the deployment and the Version
   - id: my-container # in case of ECS, this is the service name
     type: ecs
     cluster: my-cluster
