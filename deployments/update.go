@@ -9,17 +9,20 @@ import (
 
 func Update(_ *cobra.Command, args []string) {
 	deploymentsConfigPath := args[0]
-	serviceId := args[1]
-	version := args[2]
+	nrArgs := len(args)
+	serviceIds := args[1 : nrArgs-1]
+	version := args[nrArgs-1]
 	deployments, err := LoadDeploymentsFromFile(deploymentsConfigPath)
 	cobra.CheckErr(err)
-	service := utils.Find(deployments, func(d engine.Deployment) bool {
-		return d.Id() == serviceId
-	})
-	if service == nil {
-		cobra.CheckErr(fmt.Errorf("there is no service with id '%s'", serviceId))
+	for _, serviceId := range serviceIds {
+		service := utils.Find(deployments, func(d engine.Deployment) bool {
+			return d.Id() == serviceId
+		})
+		if service == nil {
+			cobra.CheckErr(fmt.Errorf("there is no service with id '%s'", serviceId))
+		}
+		(*service).SetVersion(version)
 	}
-	(*service).SetVersion(version)
 	err = WriteDeploymentsToFile(deploymentsConfigPath, deployments)
 	cobra.CheckErr(err)
 }
