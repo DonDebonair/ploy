@@ -17,7 +17,7 @@ var updateCmd = &cobra.Command{
 This will update the yaml file so that the specified service is now set to
 the desired version.`,
 	Run:  deployments.Update,
-	Args: cobra.ExactArgs(3),
+	Args: cobra.MinimumNArgs(3),
 }
 
 func init() {

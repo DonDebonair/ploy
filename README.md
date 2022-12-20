@@ -84,6 +84,14 @@ version. **This will not do an actual deployment**. You can run `ploy deploy` af
 
 This command was created to make it easy to update deployment files through CI/CD.
 
+You can update several services in a single command, by separating the names with spaces. All the services will have the 
+same version. This is convenient for mono repos.
+
+```bash
+ploy update development.yml my-service my-other-service v123
+```
+
+
 ## Engines
 
 There are currently two supported deployment engines:
