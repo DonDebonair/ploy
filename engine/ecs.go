@@ -87,13 +87,15 @@ func (engine *ECSDeploymentEngine) Deploy(config Deployment, p func(string, ...a
 
 func generateRegisterTaskDefinitionInput(taskDefinition *types.TaskDefinition, version string, versionEnvironmentKey string) *ecs.RegisterTaskDefinitionInput {
 	containerDefinitions := taskDefinition.ContainerDefinitions
-	imageName := strings.Split(*containerDefinitions[0].Image, ":")[0]
-	containerDefinitions[0].Image = aws.String(imageName + ":" + version)
-	if versionEnvironmentKey != "" {
-		containerDefinitions[0].Environment = append(containerDefinitions[0].Environment, types.KeyValuePair{
-			Name:  aws.String(versionEnvironmentKey),
-			Value: aws.String(version),
-		})
+	for i := range containerDefinitions {
+		imageName := strings.Split(*containerDefinitions[i].Image, ":")[0]
+		containerDefinitions[i].Image = aws.String(imageName + ":" + version)
+		if versionEnvironmentKey != "" {
+			containerDefinitions[i].Environment = append(containerDefinitions[i].Environment, types.KeyValuePair{
+				Name:  aws.String(versionEnvironmentKey),
+				Value: aws.String(version),
+			})
+		}
 	}
 	registerTaskDefinitionInput := &ecs.RegisterTaskDefinitionInput{
 		Family:                  taskDefinition.Family,
