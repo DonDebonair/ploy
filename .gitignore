@@ -37,3 +37,5 @@ dist/
 /*.sh
 
 ploy
+generated/
+.DS_Store
