@@ -202,7 +202,7 @@ func getImageVersion(functionInfo *lambda.GetFunctionOutput) string {
 func getZipVersion(funtionInfo *lambda.GetFunctionOutput, lambdaConfig *LambdaDeployment) (string, error) {
 	version, present := funtionInfo.Tags[lambdaConfig.VersionTag]
 	if present == false {
-		return "", fmt.Errorf("version tag '%s' not found", lambdaConfig.VersionTag)
+		return "", fmt.Errorf("version tag '%s' not found for lambda '%s'", lambdaConfig.VersionTag, lambdaConfig.Id())
 	}
 	return version, nil
 }
